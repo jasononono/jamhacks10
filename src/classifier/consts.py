@@ -13,7 +13,7 @@ BATCH_SIZE = 32
 EPOCHS = 500
 
 THRESHOLD = 20 # aim at face margin of error
-PATIENCE = 500 # amount of ticks to wait before forced yeet
+PATIENCE = 80 # amount of ticks to wait before forced yeet
 
 timer = Timer()
 progress = Progress(timer)

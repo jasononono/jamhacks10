@@ -119,6 +119,7 @@ def on_button_press():
 
         while tick < PATIENCE:
             face = cascade.detectMultiScale(cv2.cvtColor(frame_ext, cv2.COLOR_BGR2RGB))
+            print(tick)
             if len(face) == 0:
                 tick += 1
                 continue
@@ -132,7 +133,6 @@ def on_button_press():
             cv2.imshow("camera external", frame_ext)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 pass
-            print(tick)
 
         cv2.destroyAllWindows()
         yeet()
