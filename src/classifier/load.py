@@ -1,9 +1,17 @@
 from PIL import Image, ImageOps
 import numpy as np
-import pathlib
+import pathlib, csv
 
 from consts import *
 
+
+def load(directory):
+    with open(pathlib.Path(directory) / "_classes.csv", 'r') as f:
+        reader = csv.reader(f)
+
+        for row in reader:
+            img = Image.open(directory / row[0])
+            
 
 def load_set(directory):
     for f in directory.iterdir():
