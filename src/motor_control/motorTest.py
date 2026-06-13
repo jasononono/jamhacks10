@@ -56,6 +56,8 @@ if __name__ == "__main__":
         move_right(steps=200, speed_delay=0.002)
         time.sleep(1)
         move_left(steps=200, speed_delay=0.002)
+        time.sleep(1)
+        charge_launch()
 
     finally:
         GPIO.cleanup()
