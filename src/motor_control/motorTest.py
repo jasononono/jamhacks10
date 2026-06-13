@@ -36,7 +36,7 @@ def move_left(steps, speed_delay=0.001):
     move_motor(steps, direction=GPIO.LOW, speed_delay=speed_delay)
 
 def charge_launch():
-    steps = 149.94
+    steps = 200
     direction = GPIO.LOW
     speed_delay = 0.001
     
