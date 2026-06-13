@@ -132,6 +132,7 @@ def on_button_press():
             cv2.imshow("camera external", frame_ext)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 pass
+            print(tick)
 
         cv2.destroyAllWindows()
         yeet()
@@ -158,9 +159,9 @@ def crop(frame):
 
 # EXTERNS
 def yeet():
-
+    print("yeet?")
     charge_launch()
-    pass
+    print("yeet fini")
 
 def deposit():
     move_right(steps=200, speed_delay=0.0005)
