@@ -1,0 +1,4 @@
+{
+    "num_classes": 6,
+    "classes": ["BOTTLE", "CAN", "JUICE_BOX", "MILK_CARTON", "STYROFOAM", "UTENSIL"]
+}
