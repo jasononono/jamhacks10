@@ -3,6 +3,7 @@ import random
 
 import torch
 from torchvision.transforms import v2
+from torch.utils.data import DataLoader
 
 from consts import *
 from dataset import Dataset
@@ -25,8 +26,9 @@ transpose = v2.Compose([
     v2.Normalize(mean = [0.485, 0.456, 0.406], std = [0.229, 0.224, 0.225])
 ])
 dataset = Dataset("data", device, transpose)
+dataloader = DataLoader(dataset, batch_size = 32, shuffle = True)
 
 
 cnn = CNN().to(device)
 
-train(cnn, dataset, 0)
+train(cnn, dataloader, 20)

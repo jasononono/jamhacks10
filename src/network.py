@@ -20,7 +20,7 @@ class CNN(nn.Module):
         self.pool3 = nn.MaxPool2d(kernel_size = 2, stride = 2) # (64, 16, 16)
 
         self.lin1 = nn.Linear(64 * 16 * 16, 256)
-        # maybe add dropout here?
+        self.dropout = nn.Dropout(0.5)
         self.lin2 = nn.Linear(256, CLASSES)
 
     def forward(self, x):
@@ -28,8 +28,9 @@ class CNN(nn.Module):
         x = self.pool2(f.relu(self.conv2(x)))
         x = self.pool3(f.relu(self.conv3(x)))
 
-        x = x.reshape(64 * 16 * 16)
+        x = torch.flatten(x, 1)
         x = f.relu(self.lin1(x))
+        x = self.dropout(x)
         x = self.lin2(x)
 
         return x
