@@ -118,8 +118,13 @@ def on_button_press():
         tick = 0
 
         while tick < PATIENCE:
+            success, frame_ext = cam_ext.read()
+            if not success:
+                tick += 1
+                continue
             face = cascade.detectMultiScale(cv2.cvtColor(frame_ext, cv2.COLOR_BGR2RGB))
             print(tick)
+            cv2.imshow("camera external", frame_ext)
             if len(face) == 0:
                 tick += 1
                 continue
@@ -130,7 +135,6 @@ def on_button_press():
                 stepper_right()
             else:
                 stepper_left()
-            cv2.imshow("camera external", frame_ext)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 pass
 
