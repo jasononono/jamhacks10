@@ -14,7 +14,7 @@ camera_width, camera_height = int(camera.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cam
 resolution = min(camera_width, camera_height)
 
 model = CNN()
-weights = torch.load("src/model/py2-1.pth", weights_only = True)
+weights = torch.load("src/model/py3-1.pth", weights_only = True)
 model.load_state_dict(weights)
 model.eval()
 
@@ -30,7 +30,7 @@ def on_button_press():
     prediction = f.softmax(model(image.unsqueeze(0)))
     c = torch.argmax(prediction, axis = 1)
     print(LABELS[c])
-
+    return c in (0, 1)
 
 def crop(frame):
     img = Image.fromarray(frame, "RGB")
@@ -42,4 +42,4 @@ def crop(frame):
         
 
 time.sleep(1)
-on_button_press()
+print(on_button_press())
