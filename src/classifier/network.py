@@ -19,7 +19,10 @@ class CNN(nn.Module):
         self.conv3 = nn.Conv2d(in_channels = 32, out_channels = 64, kernel_size = 3, padding = 1) # (64, 32, 32)
         self.pool3 = nn.MaxPool2d(kernel_size = 2, stride = 2) # (64, 16, 16)
 
-        self.lin1 = nn.Linear(64 * 16 * 16, 256)
+        self.conv4 = nn.Conv2d(in_channels = 64, out_channels = 128, kernel_size = 3, padding = 1) # (128, 16, 16)
+        self.pool4 = nn.MaxPool2d(kernel_size = 2, stride = 2) # (128, 8, 8)
+
+        self.lin1 = nn.Linear(128 * 8 * 8, 256)
         self.dropout = nn.Dropout(0.5)
         self.lin2 = nn.Linear(256, CLASSES)
 
@@ -27,6 +30,7 @@ class CNN(nn.Module):
         x = self.pool1(f.relu(self.conv1(x)))
         x = self.pool2(f.relu(self.conv2(x)))
         x = self.pool3(f.relu(self.conv3(x)))
+        x = self.pool4(f.relu(self.conv4(x)))
 
         x = torch.flatten(x, 1)
         x = f.relu(self.lin1(x))

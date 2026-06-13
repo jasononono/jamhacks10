@@ -42,7 +42,7 @@ class Progress:
     def update(self, tick, forced = False):
         if self.timer.get(self.flush) > 0.5 or forced:
             for _ in range(len(self.entries) + 1):
-                print(f"\33[2K\r\033[F", end = "")
+                print(f"\033[2K\r\033[F", end = "")
             print(f"{self.message} ({tick}/{self.total}) [time = {self.timer.now(self.section_start)}, elapsed = {self.timer.now(self.time_start)}]")
             for k, v in self.entries.items():
                 print(f"{k} = {v}")
@@ -60,6 +60,7 @@ class Progress:
 
     def add_entry(self, name):
         self.entries[name] = "N/A"
+        print(f"{name} = N/A")
 
     def update_entry(self, name, value):
         self.entries[name] = value
