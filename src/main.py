@@ -152,7 +152,7 @@ def crop(frame):
 
 # EXTERNS
 def yeet():
-    setupn_gpio()
+    setup_gpio()
 
     charge_launch()
     pass
