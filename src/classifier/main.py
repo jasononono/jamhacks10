@@ -27,7 +27,7 @@ def on_button_press():
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     image = torch.tensor(crop(frame).transpose(2, 0, 1), dtype = torch.float32) / 255
 
-    prediction = f.softmax(model(image.unsqueeze(0)))
+    prediction = f.softmax(model(image.unsqueeze(0)), dim = 1)
     c = torch.argmax(prediction, axis = 1)
     print(LABELS[c])
     return c in (0, 1)
