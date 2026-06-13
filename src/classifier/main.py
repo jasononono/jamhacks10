@@ -13,7 +13,10 @@ camera = cv2.VideoCapture(0)
 camera_width, camera_height = int(camera.get(cv2.CAP_PROP_FRAME_WIDTH)), int(camera.get(cv2.CAP_PROP_FRAME_HEIGHT))
 resolution = min(camera_width, camera_height)
 
-model = CNN()
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print("device:", device)
+
+model = CNN().to(device)
 weights = torch.load("src/model/py3-1.pth", weights_only = True)
 model.load_state_dict(weights)
 model.eval()
@@ -25,7 +28,7 @@ def on_button_press():
         return
     
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    image = torch.tensor(crop(frame).transpose(2, 0, 1), dtype = torch.float32) / 255
+    image = torch.tensor(crop(frame).transpose(2, 0, 1), dtype = torch.float32).to(device) / 255
 
     prediction = f.softmax(model(image.unsqueeze(0)), dim = 1)
     c = torch.argmax(prediction, axis = 1)

@@ -12,10 +12,9 @@ from network import CNN
 import train
 
 
-try:
-    device = torch.device("mps")
-except:
-    device = torch.device("cps")
+device = torch.device("mps" if torch.mps.is_available() else "cpu")
+print("device:", device)
+
 torch.random.manual_seed(SEED)
 np.random.seed(SEED)
 random.seed(SEED)
