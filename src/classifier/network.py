@@ -2,7 +2,7 @@ import torch
 from torch import nn
 import torch.nn.functional as f
 
-from consts import *
+from classifier.consts import *
 
 
 class CNN(nn.Module):

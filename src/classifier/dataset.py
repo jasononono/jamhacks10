@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 
-from consts import *
+from classifier.consts import *
 
 
 class Dataset(torch.utils.data.Dataset):

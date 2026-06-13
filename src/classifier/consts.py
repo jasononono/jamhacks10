@@ -1,4 +1,4 @@
-from util import Progress, Timer
+from classifier.util import Progress, Timer
 
 
 CLASSES = 6
