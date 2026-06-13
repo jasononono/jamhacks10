@@ -4,6 +4,7 @@ import numpy as np
 
 import torch
 import torch.nn.functional as f
+from torchvision.transforms import v2
 
 from classifier.network import CNN
 from classifier.consts import *
@@ -22,6 +23,12 @@ model.load_state_dict(weights)
 model.eval()
 
 cascade = cv2.CascadeClassifier("src/external/haarcascade_frontalface_default.xml")
+
+transpose = v2.Compose([
+    v2.ToImage(),
+    v2.ToDtype(torch.float32, scale = True),
+    v2.Normalize(mean = (0.485, 0.456, 0.406), std = (0.229, 0.224, 0.225))
+])
 
 
 def on_button_press():
@@ -54,18 +61,16 @@ def on_button_press():
 
 
 def recyclable(frame):
-    image = torch.tensor(crop(frame).transpose(2, 0, 1), dtype = torch.float32).to(device) / 255
-    x_min = image.min()
-    x_max = image.max()
-    image = (image - x_min) / (x_max - x_min)
+    image = torch.tensor(crop(frame).transpose(2, 0, 1)).to(device)
 
-    prediction = f.softmax(model(image.unsqueeze(0)), dim = 1)
+    with torch.no_grad():
+        prediction = f.softmax(model(transpose(image).unsqueeze(0)), dim = 1)
     c = torch.argmax(prediction, axis = 1)
     print(LABELS[c])
     return c in (0, 1)
 
 def crop(frame):
-    img = Image.fromarray(frame, "RGB")
+    img = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB), "RGB")
     x = (camera_width - resolution) // 2
     y = (camera_height - resolution) // 2
     cropped = img.crop((x, y, x + resolution, y + resolution))
@@ -92,15 +97,21 @@ def stepper_left():
 
 # TESTING
 
-# print()
-# while True:
-#     frame = on_button_press()
-#     cv2.imshow("picky yeeter", frame)
 
-#     if cv2.waitKey(1) & 0xFF == ord('q'):
-#         break
+print()
+while True:
+    success, frame = camera.read()
+    if not success: continue
+    recyclable(frame)
+    cv2.imshow("picky yeeter", frame)
+
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
 
 
-frame = on_button_press()
+# frame = on_button_press()
+
+
+
 camera.release()
 cv2.destroyAllWindows()
