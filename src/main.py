@@ -82,7 +82,7 @@ def charge_launch():
 cam_int = cv2.VideoCapture(0)
 cam_int_width, cam_int_height = int(cam_int.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cam_int.get(cv2.CAP_PROP_FRAME_HEIGHT))
 cam_int_resolution = min(cam_int_width, cam_int_height)
-cam_ext = cv2.VideoCapture(1)
+cam_ext = cv2.VideoCapture(2)
 cam_ext_width, cam_ext_height = int(cam_ext.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cam_ext.get(cv2.CAP_PROP_FRAME_HEIGHT))
 cam_ext_resolution = min(cam_ext_width, cam_ext_height)
 
@@ -106,9 +106,11 @@ transpose = v2.Compose([
 def on_button_press():
     success, frame_int = cam_int.read()
     if not success:
+        print("cam_int failed to read")
         return
     success, frame_ext = cam_ext.read()
     if not success:
+        print("cam_ext failed to read")
         return
 
     if recyclable(frame_int):
