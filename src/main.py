@@ -128,6 +128,8 @@ def on_button_press():
             else:
                 stepper_left()
             cv2.imshow("camera external", frame_ext)
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                pass
 
         cv2.destroyAllWindows()
         yeet()
@@ -192,4 +194,4 @@ frame = on_button_press()
 
 
 cam_int.release()
-cv2.destroyAllWindows()
+cam_ext.release()
