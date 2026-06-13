@@ -18,7 +18,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print("device:", device)
 
 model = CNN().to(device)
-weights = torch.load("src/model/py3-2.pth", weights_only = True)
+weights = torch.load("src/model/py4-0.pth", weights_only = True)
 model.load_state_dict(weights)
 model.eval()
 
