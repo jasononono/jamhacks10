@@ -32,7 +32,22 @@ def on_button_press():
     if recyclable(frame):
         deposit()
     else:
-        face = cascade.detectMultiScale(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+        center = camera_width // 2
+        tick = 0
+
+        while tick < PATIENCE:
+            face = cascade.detectMultiScale(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+            if len(face) == 0:
+                tick += 1
+                continue
+            target = (face[0][0] + face[0][2]) // 2
+            if abs(target - center) < THRESHOLD:
+                break
+            elif target > center:
+                stepper_right()
+            else:
+                stepper_left()
+
         yeet()
 
     return frame
