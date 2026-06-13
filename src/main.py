@@ -9,7 +9,7 @@ from torchvision.transforms import v2
 from classifier.network import CNN
 from classifier.consts import *
 
-import Jeson.GPIO as GPIO
+import Jetson.GPIO as GPIO
 import time
 import sys
 
@@ -19,6 +19,8 @@ DIR_PIN = 16   # Connects to DIR on TMC2208
 STEP2_PIN = 11
 DIR2_PIN = 15
 
+INPUT_PIN = 13
+
 
 def setup_gpio():
     GPIO.setmode(GPIO.BOARD)
@@ -26,7 +28,7 @@ def setup_gpio():
     GPIO.setup(DIR_PIN, GPIO.OUT, initial=GPIO.LOW)
     GPIO.setup(STEP2_PIN, GPIO.OUT, initial=GPIO.LOW)
     GPIO.setup(DIR2_PIN, GPIO.OUT, initial=GPIO.LOW)
-
+    GPIO.setup(INPUT_PIN, GPIO.IN)
 
 def move_motor(steps, direction, speed_delay=0.001):
     # Set the direction pin
@@ -49,7 +51,6 @@ def move_left(steps, speed_delay=0.001):
 
 
 def charge_launch():
-    steps = 400
     direction = GPIO.LOW
     speed_delay = 0.001
 
@@ -57,12 +58,24 @@ def charge_launch():
     GPIO.output(DIR2_PIN, direction)
 
     # Pulse both steppers simultaneously
-    for _ in range(int(steps)):
+    for _ in range(283):
         GPIO.output(STEP2_PIN, GPIO.HIGH)
         time.sleep(speed_delay)
         GPIO.output(STEP2_PIN, GPIO.LOW)
         time.sleep(speed_delay)
 
+    time.sleep(1)
+    for _ in range(283):
+        GPIO.output(STEP2_PIN, GPIO.HIGH)
+        time.sleep(speed_delay)
+        GPIO.output(STEP2_PIN, GPIO.LOW)
+        time.sleep(speed_delay)
+    sleep(1)
+    for _ in range(117):
+        GPIO.output(STEP2_PIN, GPIO.HIGH)
+        time.sleep(speed_delay)
+        GPIO.output(STEP2_PIN, GPIO.LOW)
+        time.sleep(speed_delay)
 
 camera = cv2.VideoCapture(0)
 camera_width, camera_height = int(camera.get(cv2.CAP_PROP_FRAME_WIDTH)), int(camera.get(cv2.CAP_PROP_FRAME_HEIGHT))
@@ -133,7 +146,7 @@ def crop(frame):
 
 # EXTERNS
 def yeet():
-    setup_gpio()
+    setupn_gpio()
 
     charge_launch()
     pass
