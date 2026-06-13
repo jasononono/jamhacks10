@@ -36,7 +36,7 @@ def move_left(steps, speed_delay=0.001):
     move_motor(steps, direction=GPIO.LOW, speed_delay=speed_delay)
 
 def charge_launch():
-    steps = 200
+    steps = 400
     direction = GPIO.LOW
     speed_delay = 0.001
     
@@ -53,9 +53,9 @@ if __name__ == "__main__":
     try:
         setup_gpio()
 
-        move_right(steps=200, speed_delay=0.002)
+        move_right(steps=400, speed_delay=0.002)
         time.sleep(1)
-        move_left(steps=200, speed_delay=0.002)
+        move_left(steps=400, speed_delay=0.002)
         time.sleep(1)
         charge_launch()
 
