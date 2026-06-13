@@ -127,7 +127,9 @@ def on_button_press():
                 stepper_right()
             else:
                 stepper_left()
+            cv2.imshow("camera external", frame_ext)
 
+        cv2.destroyAllWindows()
         yeet()
 
     return frame_int
