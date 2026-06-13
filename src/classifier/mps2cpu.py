@@ -1,6 +1,6 @@
 import torch
 
-from network import CNN
+from classifier.network import CNN
 
 FILE = "src/model/py3-1.pth"
 

@@ -6,7 +6,7 @@ import numpy as np
 from sklearn.metrics import confusion_matrix
 import seaborn as sb
 
-from consts import *
+from classifier.consts import *
 
 
 def train(model, device, dataset, epochs):

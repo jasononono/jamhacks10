@@ -1,4 +1,4 @@
-from util import Progress, Timer
+from classifier.util import Progress, Timer
 
 
 CLASSES = 6
@@ -11,6 +11,9 @@ SEED = 67
 LEARNING_RATE = 0.0004
 BATCH_SIZE = 32
 EPOCHS = 500
+
+THRESHOLD = 20 # aim at face margin of error
+PATIENCE = 80 # amount of ticks to wait before forced yeet
 
 timer = Timer()
 progress = Progress(timer)
