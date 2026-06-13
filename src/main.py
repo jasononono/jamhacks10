@@ -13,6 +13,8 @@ import Jetson.GPIO as GPIO
 import time
 import sys
 
+GPIO.setmode(GPIO.BOARD)
+
 STEP_PIN = 12  # Connects to STEP on TMC2208
 DIR_PIN = 16   # Connects to DIR on TMC2208
 
@@ -23,13 +25,13 @@ INPUT_PIN = 13
 
 
 def setup_gpio():
-    GPIO.setmode(GPIO.BOARD)
     GPIO.setup(STEP_PIN, GPIO.OUT, initial=GPIO.LOW)
     GPIO.setup(DIR_PIN, GPIO.OUT, initial=GPIO.LOW)
     GPIO.setup(STEP2_PIN, GPIO.OUT, initial=GPIO.LOW)
     GPIO.setup(DIR2_PIN, GPIO.OUT, initial=GPIO.LOW)
     GPIO.setup(INPUT_PIN, GPIO.IN)
 
+setup_gpio()
 def move_motor(steps, direction, speed_delay=0.001):
     # Set the direction pin
     GPIO.output(DIR_PIN, direction)
@@ -154,7 +156,6 @@ def crop(frame):
 
 # EXTERNS
 def yeet():
-    setup_gpio()
 
     charge_launch()
     pass
