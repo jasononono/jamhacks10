@@ -1,5 +1,5 @@
 # Picky Yeeter
-eats recyclables, yeets everything else
+Eats the recyclables, yeets all else
 
 The dataset that our CNN trained on is from here:
     https://www.kaggle.com/datasets/ashwinshrivastav/most-common-recyclable-and-nonrecyclable-objects?resource=download
