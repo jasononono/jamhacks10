@@ -10,7 +10,7 @@ from classifier.network import CNN
 from classifier.consts import *
 
 import Jetson.GPIO as GPIO
-import time
+import time.sleep
 import sys
 
 STEP_PIN = 12  # Connects to STEP on TMC2208
