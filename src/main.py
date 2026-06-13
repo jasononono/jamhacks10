@@ -10,7 +10,7 @@ from classifier.network import CNN
 from classifier.consts import *
 
 import Jetson.GPIO as GPIO
-import time.sleep
+import time
 import sys
 
 STEP_PIN = 12  # Connects to STEP on TMC2208
@@ -70,7 +70,7 @@ def charge_launch():
         time.sleep(speed_delay)
         GPIO.output(STEP2_PIN, GPIO.LOW)
         time.sleep(speed_delay)
-    sleep(1)
+    time.sleep(1)
     for _ in range(117):
         GPIO.output(STEP2_PIN, GPIO.HIGH)
         time.sleep(speed_delay)
