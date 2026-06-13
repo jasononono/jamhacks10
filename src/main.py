@@ -70,7 +70,7 @@ def charge_launch():
         time.sleep(speed_delay)
         GPIO.output(STEP2_PIN, GPIO.LOW)
         time.sleep(speed_delay)
-    sleep(1)
+    time.sleep(1)
     for _ in range(117):
         GPIO.output(STEP2_PIN, GPIO.HIGH)
         time.sleep(speed_delay)
@@ -154,7 +154,7 @@ def crop(frame):
 
 # EXTERNS
 def yeet():
-    setupn_gpio()
+    setup_gpio()
 
     charge_launch()
     pass
