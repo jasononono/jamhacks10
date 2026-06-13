@@ -12,7 +12,10 @@ from network import CNN
 import train
 
 
-device = torch.device("mps")
+try:
+    device = torch.device("mps")
+except:
+    device = torch.device("cps")
 torch.random.manual_seed(SEED)
 np.random.seed(SEED)
 random.seed(SEED)
@@ -61,4 +64,4 @@ plt.show()
 
 ans = input("save model? -> ")
 if ans != "":
-    torch.save(cnn.state_dict(), f"src/model/{ans}.pth")
+    torch.save({k: v.cpu() for k, v in cnn.state_dict().items()}, f"src/model/{ans}.pth")
