@@ -112,6 +112,8 @@ def on_button_press():
         return
 
     if recyclable(frame_int):
+        cam_int.release()
+        cam_ext.release()
         deposit()
     else:
         center = cam_ext_width // 2
@@ -138,6 +140,8 @@ def on_button_press():
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 pass
 
+        cam_int.release()
+        cam_ext.release()
         cv2.destroyAllWindows()
         yeet()
 
@@ -201,3 +205,4 @@ frame = on_button_press()
 
 cam_int.release()
 cam_ext.release()
+GPIO.cleanup()
