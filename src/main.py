@@ -77,9 +77,12 @@ def charge_launch():
         GPIO.output(STEP2_PIN, GPIO.LOW)
         time.sleep(speed_delay)
 
-camera = cv2.VideoCapture(0)
-camera_width, camera_height = int(camera.get(cv2.CAP_PROP_FRAME_WIDTH)), int(camera.get(cv2.CAP_PROP_FRAME_HEIGHT))
-resolution = min(camera_width, camera_height)
+cam_int = cv2.VideoCapture(0)
+cam_int_width, cam_int_height = int(cam_int.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cam_int.get(cv2.CAP_PROP_FRAME_HEIGHT))
+cam_int_resolution = min(cam_int_width, cam_int_height)
+cam_ext = cv2.VideoCapture(1)
+cam_ext_width, cam_ext_height = int(cam_ext.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cam_ext.get(cv2.CAP_PROP_FRAME_HEIGHT))
+cam_ext_resolution = min(cam_ext_width, cam_ext_height)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print("device:", device)
@@ -99,18 +102,21 @@ transpose = v2.Compose([
 
 
 def on_button_press():
-    success, frame = camera.read()
+    success, frame_int = cam_int.read()
+    if not success:
+        return
+    success, frame_ext = cam_ext.read()
     if not success:
         return
 
-    if recyclable(frame):
+    if recyclable(frame_int):
         deposit()
     else:
-        center = camera_width // 2
+        center = cam_ext_width // 2
         tick = 0
 
         while tick < PATIENCE:
-            face = cascade.detectMultiScale(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+            face = cascade.detectMultiScale(cv2.cvtColor(frame_ext, cv2.COLOR_BGR2RGB))
             if len(face) == 0:
                 tick += 1
                 continue
@@ -124,7 +130,7 @@ def on_button_press():
 
         yeet()
 
-    return frame
+    return frame_int
 
 
 def recyclable(frame):
@@ -138,9 +144,9 @@ def recyclable(frame):
 
 def crop(frame):
     img = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB), "RGB")
-    x = (camera_width - resolution) // 2
-    y = (camera_height - resolution) // 2
-    cropped = img.crop((x, y, x + resolution, y + resolution))
+    x = (cam_int_width - cam_int_resolution) // 2
+    y = (cam_int_height - cam_int_resolution) // 2
+    cropped = img.crop((x, y, x + cam_int_resolution, y + cam_int_resolution))
     return np.array(cropped.resize((128, 128)))
 
 
@@ -169,20 +175,19 @@ def stepper_left():
 # TESTING
 
 
-print()
-while True:
-    success, frame = camera.read()
-    if not success: continue
-    recyclable(frame)
-    cv2.imshow("picky yeeter", frame)
+# print()
+# while True:
+#     success, frame = cam_int.read()
+#     if not success: continue
+#     recyclable(frame)
+#     cv2.imshow("picky yeeter", frame)
 
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
-
-
-# frame = on_button_press()
+#     if cv2.waitKey(1) & 0xFF == ord('q'):
+#         break
 
 
+frame = on_button_press()
 
-camera.release()
+
+cam_int.release()
 cv2.destroyAllWindows()
