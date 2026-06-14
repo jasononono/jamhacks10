@@ -9,7 +9,7 @@ from torchvision.transforms import v2
 from classifier.network import CNN
 from classifier.consts import *
 
-# import Jetson.GPIO as GPIO
+import Jetson.GPIO as GPIO
 
 
 # GLOBALS #
@@ -18,17 +18,38 @@ from classifier.consts import *
 THRESHOLD = 20 # aim at face margin of error
 PATIENCE = 80 # amount of ticks to wait before forced yeet
 
-# STEP_PIN = 12  # Connects to STEP on TMC2208
-# DIR_PIN = 16   # Connects to DIR on TMC2208
+STEP_PIN = 12  # Connects to STEP on TMC2208
+DIR_PIN = 16   # Connects to DIR on TMC2208
 
-# STEP2_PIN = 11
-# DIR2_PIN = 15
+STEP2_PIN = 11
+DIR2_PIN = 15
 
-# INPUT_PIN = 13
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(STEP_PIN, GPIO.OUT, initial=GPIO.LOW)
+GPIO.setup(DIR_PIN, GPIO.OUT, initial=GPIO.LOW)
+GPIO.setup(STEP2_PIN, GPIO.OUT, initial=GPIO.LOW)
+GPIO.setup(DIR2_PIN, GPIO.OUT, initial=GPIO.LOW)
 
+def move_right(steps, speed_delay=0.001):
+    move_motor(steps, direction=GPIO.HIGH, speed_delay=speed_delay)
 
-# # GPIO CTRL
+def move_left(steps, speed_delay=0.001):
+    move_motor(steps, direction=GPIO.LOW, speed_delay=speed_delay)
 
+def charge_launch():
+    steps = 400
+    direction = GPIO.LOW
+    speed_delay = 0.001
+
+    # Set direction for both steppers
+    GPIO.output(DIR2_PIN, direction)
+
+    # Pulse both steppers simultaneously
+    for _ in range(int(steps)):
+        GPIO.output(STEP2_PIN, GPIO.HIGH)
+        time.sleep(speed_delay)
+        GPIO.output(STEP2_PIN, GPIO.LOW)
+        time.sleep(speed_delay)
 
 # def move_motor(steps, direction, speed_delay=0.001):
 #     # Set the direction pin
@@ -119,54 +140,53 @@ transpose = v2.Compose([
 ])
 
 
-# LOGIC FUNCTIONS
+# main stuff
 
 
-def on_button_press():
-    success, frame_int = cam_int.read()
-    if not success:
-        print("cam_int failed to read")
-        return
-    success, frame_ext = cam_ext.read()
-    if not success:
-        print("cam_ext failed to read")
-        return
+success, frame_int = cam_int.read()
+if not success:
+    print("cam_int failed to read")
+    return
+success, frame_ext = cam_ext.read()
+if not success:
+    print("cam_ext failed to read")
+    return
 
-    if recyclable(frame_int):
-        cam_int.release()
-        cam_ext.release()
-        deposit()
-    else:
-        center = cam_ext_width // 2
-        tick = 0
+if recyclable(frame_int):
+    cam_int.release()
+    cam_ext.release()
+    deposit()
+else:
+    center = cam_ext_width // 2
+    tick = 0
 
-        while tick < PATIENCE:
-            success, frame_ext = cam_ext.read()
-            if not success:
-                tick += 1
-                continue
-            face = cascade.detectMultiScale(cv2.cvtColor(frame_ext, cv2.COLOR_BGR2RGB))
-            print(tick)
-            cv2.imshow("camera external", frame_ext)
-            if len(face) == 0:
-                tick += 1
-                continue
-            target = (face[0][0] + face[0][2]) // 2
-            if abs(target - center) < THRESHOLD:
-                break
-            elif target > center:
-                stepper_right()
-            else:
-                stepper_left()
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                pass
+    while tick < PATIENCE:
+        success, frame_ext = cam_ext.read()
+        if not success:
+            tick += 1
+            continue
+        face = cascade.detectMultiScale(cv2.cvtColor(frame_ext, cv2.COLOR_BGR2RGB))
+        print(tick)
+        cv2.imshow("camera external", frame_ext)
+        if len(face) == 0:
+            tick += 1
+            continue
+        target = (face[0][0] + face[0][2]) // 2
+        if abs(target - center) < THRESHOLD:
+            break
+        elif target > center:
+            move_right(5)
+        else:
+            move_left(5)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            pass
 
-        cam_int.release()
-        cam_ext.release()
-        cv2.destroyAllWindows()
-        yeet()
+    cam_int.release()
+    cam_ext.release()
+    cv2.destroyAllWindows()
+    yeet()
 
-    return frame_int
+return frame_int
 
 def recyclable(frame):
     image = torch.tensor(crop(frame).transpose(2, 0, 1)).to(device)
@@ -189,34 +209,35 @@ def crop(frame):
 
 def yeet():
     print("yeet")
-    # charge_launch()
+    charge_launch()
 
 def deposit():
     print("deposit")
-    # move_right(steps=200, speed_delay=0.0005)
-    # time.sleep(1)
-    # charge_launch()
+    move_right(steps=200, speed_delay=0.0005)
+    time.sleep(1)
+    charge_launch()
+    move_left(steps=200, speed_delay=0.0005)
 
-def stepper_right():
-    print("stepper_right")
-    # move_right(steps=50, speed_delay=0.0005)
-
-def stepper_left():
-    print("stepper_left")
-    # move_left(steps=50, speed_delay=0.0005)
+# def stepper_right():
+#     print("stepper_right")
+#     # move_right(steps=50, speed_delay=0.0005)
+#
+# def stepper_left():
+#     print("stepper_left")
+#     # move_left(steps=50, speed_delay=0.0005)
 
 
 # TESTING
 
 
-while True:
-    success, frame = cam_int.read()
-    if not success: continue
-    recyclable(frame)
-    cv2.imshow("picky yeeter", frame)
-
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
+# while True:
+#     success, frame = cam_int.read()
+#     if not success: continue
+#     recyclable(frame)
+#     cv2.imshow("picky yeeter", frame)
+#
+#     if cv2.waitKey(1) & 0xFF == ord('q'):
+#         break
 
 
 # frame = on_button_press()
@@ -224,4 +245,4 @@ while True:
 
 cam_int.release()
 cam_ext.release()
-# GPIO.cleanup()
+GPIO.cleanup()
