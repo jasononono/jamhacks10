@@ -37,7 +37,7 @@ def move_left(steps, speed_delay=0.001):
 
 def charge_launch():
     steps = 400
-    direction = GPIO.LOW
+    direction = GPIO.HIGH
     speed_delay = 0.001
 
     # Set direction for both steppers
