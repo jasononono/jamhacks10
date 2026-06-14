@@ -10,10 +10,13 @@ from classifier.network import CNN
 from classifier.consts import *
 
 import Jetson.GPIO as GPIO
-import time
-import sys
 
-GPIO.setmode(GPIO.BOARD)
+
+# GLOBALS #
+
+
+THRESHOLD = 20 # aim at face margin of error
+PATIENCE = 80 # amount of ticks to wait before forced yeet
 
 STEP_PIN = 12  # Connects to STEP on TMC2208
 DIR_PIN = 16   # Connects to DIR on TMC2208
@@ -24,14 +27,9 @@ DIR2_PIN = 15
 INPUT_PIN = 13
 
 
-def setup_gpio():
-    GPIO.setup(STEP_PIN, GPIO.OUT, initial=GPIO.LOW)
-    GPIO.setup(DIR_PIN, GPIO.OUT, initial=GPIO.LOW)
-    GPIO.setup(STEP2_PIN, GPIO.OUT, initial=GPIO.LOW)
-    GPIO.setup(DIR2_PIN, GPIO.OUT, initial=GPIO.LOW)
-    GPIO.setup(INPUT_PIN, GPIO.IN)
+# GPIO CTRL
 
-setup_gpio()
+
 def move_motor(steps, direction, speed_delay=0.001):
     # Set the direction pin
     GPIO.output(DIR_PIN, direction)
@@ -43,14 +41,11 @@ def move_motor(steps, direction, speed_delay=0.001):
         GPIO.output(STEP_PIN, GPIO.LOW)
         time.sleep(speed_delay)
 
-
 def move_right(steps, speed_delay=0.001):
     move_motor(steps, direction=GPIO.HIGH, speed_delay=speed_delay)
 
-
 def move_left(steps, speed_delay=0.001):
     move_motor(steps, direction=GPIO.LOW, speed_delay=speed_delay)
-
 
 def charge_launch():
     direction = GPIO.LOW
@@ -72,6 +67,7 @@ def charge_launch():
         time.sleep(speed_delay)
         GPIO.output(STEP2_PIN, GPIO.LOW)
         time.sleep(speed_delay)
+
     time.sleep(1)
     for _ in range(117):
         GPIO.output(STEP2_PIN, GPIO.HIGH)
@@ -79,12 +75,32 @@ def charge_launch():
         GPIO.output(STEP2_PIN, GPIO.LOW)
         time.sleep(speed_delay)
 
+
+# GPIO INIT
+
+
+GPIO.setmode(GPIO.BOARD)
+
+GPIO.setup(STEP_PIN, GPIO.OUT, initial=GPIO.LOW)
+GPIO.setup(DIR_PIN, GPIO.OUT, initial=GPIO.LOW)
+GPIO.setup(STEP2_PIN, GPIO.OUT, initial=GPIO.LOW)
+GPIO.setup(DIR2_PIN, GPIO.OUT, initial=GPIO.LOW)
+GPIO.setup(INPUT_PIN, GPIO.IN)
+
+
+# CAM INIT
+
+
 cam_int = cv2.VideoCapture(0)
 cam_int_width, cam_int_height = int(cam_int.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cam_int.get(cv2.CAP_PROP_FRAME_HEIGHT))
 cam_int_resolution = min(cam_int_width, cam_int_height)
 cam_ext = cv2.VideoCapture(2)
 cam_ext_width, cam_ext_height = int(cam_ext.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cam_ext.get(cv2.CAP_PROP_FRAME_HEIGHT))
 cam_ext_resolution = min(cam_ext_width, cam_ext_height)
+
+
+# CNN INIT
+
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print("device:", device)
@@ -101,6 +117,9 @@ transpose = v2.Compose([
     v2.ToDtype(torch.float32, scale = True),
     v2.Normalize(mean = (0.485, 0.456, 0.406), std = (0.229, 0.224, 0.225))
 ])
+
+
+# LOGIC FUNCTIONS
 
 
 def on_button_press():
@@ -149,7 +168,6 @@ def on_button_press():
 
     return frame_int
 
-
 def recyclable(frame):
     image = torch.tensor(crop(frame).transpose(2, 0, 1)).to(device)
 
@@ -168,24 +186,25 @@ def crop(frame):
 
 
 # EXTERNS
+
+
 def yeet():
-    print("yeet?")
+    print("yeet")
     charge_launch()
-    print("yeet fini")
 
 def deposit():
+    print("deposit")
     move_right(steps=200, speed_delay=0.0005)
     time.sleep(1)
     charge_launch()
-    pass
 
 def stepper_right():
+    print("stepper_right")
     move_right(steps=50, speed_delay=0.0005)
-    pass
 
 def stepper_left():
+    print("stepper_left")
     move_left(steps=50, speed_delay=0.0005)
-    pass
 
 
 # TESTING
