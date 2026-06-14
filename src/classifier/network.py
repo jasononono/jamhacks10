@@ -22,9 +22,9 @@ class CNN(nn.Module):
         self.conv4 = nn.Conv2d(in_channels = 64, out_channels = 128, kernel_size = 3, padding = 1) # (128, 16, 16)
         self.pool4 = nn.MaxPool2d(kernel_size = 2, stride = 2) # (128, 8, 8)
 
-        self.lin1 = nn.Linear(128 * 8 * 8, 256)
+        self.lin1 = nn.Linear(128 * 8 * 8, 32)
         self.dropout = nn.Dropout(0.5)
-        self.lin2 = nn.Linear(256, CLASSES)
+        self.lin2 = nn.Linear(32, 1)
 
     def forward(self, x):
         x = self.pool1(f.relu(self.conv1(x)))
