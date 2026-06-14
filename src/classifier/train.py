@@ -33,7 +33,9 @@ def train(model, device, dataset, epochs):
                 optimizer.step()
                 total_loss += loss.item()
 
-                total_correct += len(i) - torch.sum(torch.bitwise_xor(torch.round(prediction).to(torch.int8), torch.round(o).to(torch.int8)))
+                for k in range(len(o)):
+                    if round(o[k].item()) == round(prediction[k].item()):
+                        total_correct += 1
 
             total_loss /= len(dataloader)
             progress.update_entry("loss", format(total_loss, ".04f"))

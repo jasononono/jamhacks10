@@ -23,6 +23,8 @@ random.seed(SEED)
 transpose = v2.Compose([
     v2.ToImage(),
     v2.ToDtype(torch.float32, scale = True),
+    v2.RandomRotation(degrees = 180),
+    v2.RandomHorizontalFlip(p = 0.5),
     v2.ColorJitter(brightness = 0.2, contrast = 0.2, saturation = 0.2, hue = 0.1),
     v2.Normalize(mean = (0.485, 0.456, 0.406), std = (0.229, 0.224, 0.225))
 ])
@@ -32,4 +34,11 @@ test_size = len(dataset) - train_size
 train_data, test_data = random_split(dataset, (train_size, test_size))
 
 cnn = CNN().to(device)
-history = train.train(cnn, device, train_data, EPOCHS)
+try:
+    history = train.train(cnn, device, train_data, EPOCHS)
+except KeyboardInterrupt:
+    pass
+
+ans = input("save model? -> ")
+if ans != "":
+    torch.save({k: v.cpu() for k, v in cnn.state_dict().items()}, f"src/model/{ans}.pth")
