@@ -2,7 +2,7 @@ import Jetson.GPIO as GPIO
 import time
 import sys
 
-STEP_PIN = 12  # Connects to STEP on TMC2208
+STEP_PIN =   # Connects to STEP on TMC2208
 DIR_PIN = 11   # Connects to DIR on TMC2208
 
 STEP2_PIN = 16
