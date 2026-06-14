@@ -53,10 +53,7 @@ if __name__ == "__main__":
     try:
         setup_gpio()
 
-        move_right(steps=400, speed_delay=0.0005)
-        time.sleep(1)
-        move_left(steps=400, speed_delay=0.0005)
-        time.sleep(1)
+
         charge_launch()
 
     finally:
