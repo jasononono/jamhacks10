@@ -34,7 +34,7 @@ train_data, test_data = random_split(dataset, (train_size, test_size))
 
 cnn = CNN().to(device)
 try:
-    history = train.train(cnn, device, train_data, EPOCHS)
+    history = train.train(cnn, device, train_data, test_data, EPOCHS)
 except KeyboardInterrupt:
     pass
 

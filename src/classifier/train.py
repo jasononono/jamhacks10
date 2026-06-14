@@ -9,13 +9,14 @@ import seaborn as sb
 from classifier.consts import *
 
 
-def train(model, device, dataset, epochs):
-    dataloader = DataLoader(dataset, batch_size = BATCH_SIZE, shuffle = True)
+def train(model, device, train_data, test_data, epochs):
+    dataloader = DataLoader(train_data, batch_size = BATCH_SIZE, shuffle = True)
     criterion = nn.BCELoss()
     optimizer = optim.Adam(model.parameters(), lr = LEARNING_RATE, weight_decay = 0.0001)
     progress.log("training", epochs)
     progress.add_entry("loss")
     progress.add_entry("accuracy")
+    progress.add_entry("test accuracy")
 
     cost = []
     accuracy = []
@@ -40,9 +41,19 @@ def train(model, device, dataset, epochs):
             total_loss /= len(dataloader)
             progress.update_entry("loss", format(total_loss, ".04f"))
             progress.update_entry("accuracy", f"{total_correct / len(dataloader.dataset) * 100:.02f}%")
-            progress.update(e + 1)
             cost.append(total_loss)
             accuracy.append(total_correct / len(dataloader.dataset) * 100)
+
+            c = 0
+            with torch.no_grad():
+                for i, o in test_data:
+                    prediction = round(model(i.unsqueeze(0)).squeeze(0).item())
+                    if prediction == round(o.item()):
+                        c += 1
+            progress.update_entry("test accuracy", f"{c / len(test_data) * 100:.02f}%")
+
+            progress.update(e + 1)
+                
 
     except KeyboardInterrupt:
         pass
