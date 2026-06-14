@@ -1,63 +1,47 @@
-import Jetson.GPIO as GPIO
 import time
-import sys
 
-STEP_PIN = 12  # Connects to STEP on TMC2208
-DIR_PIN = 16   # Connects to DIR on TMC2208
+import board
+from adafruit_motor import stepper
+from adafruit_motorkit import MotorKit
 
-STEP2_PIN = 11
-DIR2_PIN = 15
-def setup_gpio():
 
-    GPIO.setmode(GPIO.BOARD)
-    GPIO.setup(STEP_PIN, GPIO.OUT, initial=GPIO.LOW)
-    GPIO.setup(DIR_PIN, GPIO.OUT, initial=GPIO.LOW)
-    GPIO.setup(STEP2_PIN, GPIO.OUT, initial=GPIO.LOW)
-    GPIO.setup(DIR2_PIN, GPIO.OUT, initial=GPIO.LOW)
+MOTOR_KIT_ADDRESS = 0x60
 
-def move_motor(steps, direction, speed_delay=0.001):
 
-    # Set the direction pin
-    GPIO.output(DIR_PIN, direction)
+def setup_motor_kit():
+    return MotorKit(i2c=board.I2C(), address=MOTOR_KIT_ADDRESS)
 
-    # Pulse generation loop
-    for _ in range(steps):
-        GPIO.output(STEP_PIN, GPIO.HIGH)
-        time.sleep(speed_delay)
-        GPIO.output(STEP_PIN, GPIO.LOW)
-        time.sleep(speed_delay)
 
-def move_right(steps, speed_delay=0.001):
-
-    move_motor(steps, direction=GPIO.HIGH, speed_delay=speed_delay)
-
-def move_left(steps, speed_delay=0.001):
-
-    move_motor(steps, direction=GPIO.LOW, speed_delay=speed_delay)
-
-def charge_launch():
-    steps = 400
-    direction = GPIO.LOW
-    speed_delay = 0.001
-    
-    # Set direction for both steppers
-    GPIO.output(DIR2_PIN, direction)
-    
-    # Pulse both steppers simultaneously
+def step_motor(motor, steps, direction, speed_delay=0.001):
     for _ in range(int(steps)):
-        GPIO.output(STEP2_PIN, GPIO.HIGH)
+        motor.onestep(direction=direction, style=stepper.SINGLE)
         time.sleep(speed_delay)
-        GPIO.output(STEP2_PIN, GPIO.LOW)
+
+
+def move_right(kit, steps, speed_delay=0.001):
+    step_motor(kit.stepper1, steps, stepper.FORWARD, speed_delay=speed_delay)
+
+
+def move_left(kit, steps, speed_delay=0.001):
+    step_motor(kit.stepper1, steps, stepper.BACKWARD, speed_delay=speed_delay)
+
+
+def charge_launch(kit, steps=400, speed_delay=0.001):
+    for _ in range(int(steps)):
+        kit.stepper1.onestep(direction=stepper.FORWARD, style=stepper.SINGLE)
+        kit.stepper2.onestep(direction=stepper.FORWARD, style=stepper.SINGLE)
         time.sleep(speed_delay)
+
+
 if __name__ == "__main__":
+    kit = setup_motor_kit()
+
     try:
-        setup_gpio()
-
-        move_right(steps=400, speed_delay=0.0005)
+        move_right(kit, steps=400, speed_delay=0.0005)
         time.sleep(1)
-        move_left(steps=400, speed_delay=0.0005)
+        move_left(kit, steps=400, speed_delay=0.0005)
         time.sleep(1)
-        charge_launch()
-
+        charge_launch(kit)
     finally:
-        GPIO.cleanup()
+        kit.stepper1.release()
+        kit.stepper2.release()
