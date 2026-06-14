@@ -37,4 +37,4 @@ class CNN(nn.Module):
         x = self.dropout(x)
         x = self.lin2(x)
 
-        return x
+        return f.sigmoid(x)

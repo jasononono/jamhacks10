@@ -172,10 +172,9 @@ def recyclable(frame):
     image = torch.tensor(crop(frame).transpose(2, 0, 1)).to(device)
 
     with torch.no_grad():
-        prediction = f.softmax(model(transpose(image).unsqueeze(0)), dim = 1)
-    c = torch.argmax(prediction, axis = 1)
-    print(LABELS[c])
-    return c in (0, 1)
+        prediction = round(model(transpose(image).unsqueeze(0))[0])
+    print("RECYCLE" if prediction else "DO NOT RECYCLE")
+    return prediction
 
 def crop(frame):
     img = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB), "RGB")
@@ -210,18 +209,17 @@ def stepper_left():
 # TESTING
 
 
-# print()
-# while True:
-#     success, frame = cam_int.read()
-#     if not success: continue
-#     recyclable(frame)
-#     cv2.imshow("picky yeeter", frame)
+while True:
+    success, frame = cam_int.read()
+    if not success: continue
+    recyclable(frame)
+    cv2.imshow("picky yeeter", frame)
 
-#     if cv2.waitKey(1) & 0xFF == ord('q'):
-#         break
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
 
 
-frame = on_button_press()
+# frame = on_button_press()
 
 
 cam_int.release()
