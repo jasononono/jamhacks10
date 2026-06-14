@@ -91,10 +91,10 @@ PATIENCE = 80 # amount of ticks to wait before forced yeet
 # CAM INIT
 
 
-cam_int = cv2.VideoCapture(0)
+cam_int = cv2.VideoCapture(2)
 cam_int_width, cam_int_height = int(cam_int.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cam_int.get(cv2.CAP_PROP_FRAME_HEIGHT))
 cam_int_resolution = min(cam_int_width, cam_int_height)
-cam_ext = cv2.VideoCapture(2)
+cam_ext = cv2.VideoCapture(0)
 cam_ext_width, cam_ext_height = int(cam_ext.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cam_ext.get(cv2.CAP_PROP_FRAME_HEIGHT))
 cam_ext_resolution = min(cam_ext_width, cam_ext_height)
 
@@ -106,7 +106,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print("device:", device)
 
 model = CNN().to(device)
-weights = torch.load("src/model/py5-1.pth", weights_only = True)
+weights = torch.load("src/model/py5-5.pth", weights_only = True)
 model.load_state_dict(weights)
 model.eval()
 
