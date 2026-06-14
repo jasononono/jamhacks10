@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 from PIL import Image
 
-cam_ext = cv2.VideoCapture(0)
+cam_ext = cv2.VideoCapture(2)
 cam_ext_width, cam_ext_height = int(cam_ext.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cam_ext.get(cv2.CAP_PROP_FRAME_HEIGHT))
 cam_ext_resolution = min(cam_ext_width, cam_ext_height)
 
@@ -36,7 +36,8 @@ while True:
         img = Image.fromarray(cropped, "RGB")
         inputs.append(np.array(img.resize((128, 128))))
         outputs.append(int(recyclable))
-    
+        print(f"photo taken for {'TRUE' if recyclable else 'FALSE'}")
+
 
 cam_ext.release()
 
