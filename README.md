@@ -1,4 +1,7 @@
 # Picky Yeeter
+
+https://devpost.com/software/picky-yeeter
+
 Eats the recyclables, yeets all else
 
 The dataset that our CNN trained on is from here:
